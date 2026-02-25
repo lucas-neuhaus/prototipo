@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Protótipo – Média Fidelidade</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:   #1A2B3C;
+    --green:  #27AE60;
+    --green-d:#1E8449;
+    --bg:     #F4F4F4;
+    --card:   #FFFFFF;
+    --muted:  #8A9BAD;
+    --border: #D8E0E8;
+    --red:    #E53935;
+    --gold:   #F39C12;
+    --text:   #1A2B3C;
+    --radius: 12px;
+    --shadow: 0 4px 20px rgba(26,43,60,.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #E8EDF2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+  }
+
+  /* ── NAV BAR ── */
+  .proto-nav {
+    width: 100%;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+  .proto-nav span {
+    color: rgba(255,255,255,.5);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    margin-right: 8px;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,.18); }
+  .nav-btn.active {
+    background: var(--green);
+    border-color: var(--green);
+  }
+
+  /* ── PHONE SHELL ── */
+  .stage {
+    width: 100%;
+    max-width: 390px;
+    min-height: calc(100vh - 56px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── SCREENS ── */
+  .screen {
+    display: none;
+    flex-direction: column;
+    min-height: calc(100vh - 56px);
+    background: var(--bg);
+    animation: fadeIn .3s ease;
+  }
+  .screen.visible { display: flex; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ─────────────────────────────────────────── */
+  /* SCREEN 1 – LOGIN                            */
+  /* ─────────────────────────────────────────── */
+  #s-login {
+    background: var(--navy);
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 48px 32px;
+  }
+  .login-logo {
+    width: 80px; height: 80px;
+    background: var(--green);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 32px rgba(39,174,96,.35);
+  }
+  .login-logo svg { width: 42px; height: 42px; fill: #fff; }
+  .login-title {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -.5px;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+  .login-sub {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .login-form { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+  .input-wrap { position: relative; }
+  .input-wrap label {
+    color: rgba(255,255,255,.55);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .input-wrap input {
+    width: 100%;
+    background: rgba(255,255,255,.07);
+    border: 1.5px solid rgba(255,255,255,.12);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .input-wrap input:focus { border-color: var(--green); }
+  .input-wrap input::placeholder { color: rgba(255,255,255,.25); }
+  .btn-primary {
+    margin-top: 8px;
+    width: 100%;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    min-height: 52px;
+  }
+  .btn-primary:hover { background: var(--green-d); }
+  .btn-primary:active { transform: scale(.98); }
+  .login-links {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .login-links a {
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color .2s;
+  }
+  .login-links a:hover { color: var(--green); }
+  .login-links a strong { color: var(--green); }
+  .divider-or {
+    width: 100%; display: flex; align-items: center; gap: 12px; margin: 20px 0 4px;
+  }
+  .divider-or hr { flex:1; border:none; border-top: 1px solid rgba(255,255,255,.1); }
+  .divider-or span { color: rgba(255,255,255,.3); font-size: 12px; }
+
+  /* ─────────────────────────────────────────── */
+  /* SCREEN 2 – DIAGNÓSTICO                      */
+  /* ─────────────────────────────────────────── */
+  #s-diag {
+    background: var(--bg);
+    flex-direction: column;
+  }
+  .top-bar {
+    background: var(--navy);
+    padding: 20px 24px 16px;
+  }
+  .top-bar-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .logo-pill {
+    background: var(--green);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 5px 14px;
+    border-radius: 20px;
+  }
+  .tag-diag {
+    background: rgba(255,255,255,.12);
+    color: rgba(255,255,255,.7);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .q-counter {
+    color: rgba(255,255,255,.5);
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+  .prog-bar-wrap {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,.15);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .prog-bar-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 3px;
+    transition: width .4s ease;
+  }
+  .q-body { padding: 28px 24px; flex:1; display:flex; flex-direction:column; gap:20px; }
+  .q-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.45;
+  }
+  .q-hint {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: -12px;
+  }
+  .answers { display:flex; flex-direction:column; gap:10px; }
+  .answer-opt {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    font-size: 15px;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    display: flex; align-items: center; gap: 12px;
+    min-height: 52px;
+  }
+  .answer-opt:hover { border-color: var(--green); background: #F0FBF4; }
+  .answer-opt.selected { border-color: var(--green); background: #F0FBF4; }
+  .opt-circle {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .2s, background .2s;
+  }
+  .answer-opt.selected .opt-circle {
+    border-color: var(--green);
+    background: var(--green);
+  }
+  .opt-check { width:10px; height:10px; fill:#fff; }
+  .q-actions {
+    display: flex; gap: 12px; padding: 0 24px 28px;
+  }
+  .btn-sec {
+    flex:1;
+    background: #fff;
+    color: var(--navy);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s;
+    min-height: 52px;
+  }
+  .btn-sec:hover { border-color: var(--navy); }
+  .btn-next {
+    flex: 2;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s;
+    min-height: 52px;
+  }
+  .btn-next:hover { background: var(--green-d); }
+
+  /* ─────────────────────────────────────────── */
+  /* SCREEN 3 – TRILHA                           */
+  /* ─────────────────────────────────────────── */
+  #s-trilha { background: var(--bg); }
+  .trilha-header {
+    background: var(--navy);
+    padding: 20px 24px 24px;
+  }
+  .trilha-title {
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 12px 0 4px;
+  }
+  .trilha-sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .trilha-prog-row {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .trilha-prog-bar {
+    flex:1; height: 8px;
+    background: rgba(255,255,255,.15);
+    border-radius: 4px; overflow:hidden;
+  }
+  .trilha-prog-fill {
+    width: 32%;
+    height: 100%;
+    background: var(--green);
+    border-radius: 4px;
+  }
+  .trilha-prog-label {
+    color: var(--green);
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+  .modules-list { padding: 20px 24px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .module-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    border: 2px solid transparent;
+  }
+  .module-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,43,60,.13); }
+  .module-card.locked { opacity: .55; cursor: not-allowed; }
+  .module-card.active { border-color: var(--green); }
+  .mod-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 22px;
+  }
+  .mod-icon.done { background: #E8F8EF; }
+  .mod-icon.active { background: #E8F8EF; }
+  .mod-icon.locked { background: #F0F3F6; }
+  .mod-info { flex:1; }
+  .mod-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .mod-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .mod-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .pill-done { background: #E8F8EF; color: var(--green-d); }
+  .pill-active { background: #E8F8EF; color: var(--green-d); }
+  .pill-locked { background: #F0F3F6; color: var(--muted); }
+  .mod-right { display:flex; align-items:center; }
+  .lock-icon { color: var(--muted); font-size: 18px; }
+  .check-icon { color: var(--green); font-size: 20px; }
+  .arrow-icon { color: var(--green); font-size: 20px; }
+
+  /* ─────────────────────────────────────────── */
+  /* SCREEN 4 – PORTFÓLIO                        */
+  /* ─────────────────────────────────────────── */
+  #s-portfolio { background: var(--bg); }
+  .port-header {
+    background: var(--navy);
+    padding: 20px 24px 24px;
+  }
+  .port-title { color:#fff; font-size:22px; font-weight:700; margin: 10px 0 4px; }
+  .port-sub { color: var(--muted); font-size:13px; }
+  .port-body { padding: 20px 24px; display:flex; flex-direction:column; gap:16px; flex:1; }
+  .chart-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    height: 100px;
+  }
+  .bar-col { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+  .bar-fill {
+    width: 100%;
+    border-radius: 6px 6px 0 0;
+    background: var(--navy);
+    transition: height .4s ease;
+  }
+  .bar-fill.green { background: var(--green); }
+  .bar-label { font-size: 10px; color: var(--muted); font-family:'DM Mono',monospace; }
+  .checklist-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .check-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  .check-box.done { background: var(--green); color: #fff; }
+  .check-box.todo { background: var(--border); color: transparent; }
+  .check-text { font-size: 14px; color: var(--text); }
+  .check-text.done { text-decoration: line-through; color: var(--muted); }
+  .stats-row { display: flex; gap: 12px; }
+  .stat-card {
+    flex:1;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .stat-num { font-size: 26px; font-weight: 700; color: var(--navy); font-family:'DM Mono',monospace; }
+  .stat-num.green { color: var(--green); }
+  .stat-label { font-size: 11px; color: var(--muted); text-align:center; }
+
+  /* ─────────────────────────────────────────── */
+  /* SCREEN 5 – SIMULADOR                        */
+  /* ─────────────────────────────────────────── */
+  #s-simul { background: var(--bg); }
+  .sim-header {
+    background: var(--navy);
+    padding: 20px 24px 24px;
+  }
+  .sim-title { color:#fff; font-size:22px; font-weight:700; margin:10px 0 4px; }
+  .sim-sub { color: var(--muted); font-size:13px; }
+  .sim-body { padding: 20px 24px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .sim-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    border-left: 4px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .sim-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,43,60,.13); }
+  .sim-card.active-sim { border-left-color: var(--green); }
+  .sim-card.locked-sim { opacity:.5; cursor:not-allowed; border-left-color: var(--border); }
+  .sim-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: #E8F8EF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink:0;
+  }
+  .sim-icon.locked-sim { background: #F0F3F6; }
+  .sim-info { flex:1; }
+  .sim-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:4px; }
+  .sim-desc { font-size:13px; color:var(--muted); margin-bottom:8px; }
+  .sim-meta {
+    display:flex; gap:8px;
+  }
+  .meta-tag {
+    font-size:11px; font-weight:600;
+    padding: 3px 8px; border-radius:6px;
+  }
+  .meta-q { background:#EEF2FF; color:#4F6DDE; }
+  .meta-time { background:#FEF3E2; color:#B7770D; }
+
+  /* ─────────────────────────────────────────── */
+  /* BOTTOM NAV                                  */
+  /* ─────────────────────────────────────────── */
+  .bottom-nav {
+    display: flex;
+    background: #fff;
+    border-top: 1px solid var(--border);
+    padding: 12px 0 20px;
+  }
+  .bnav-item {
+    flex:1;
+    display: flex; flex-direction:column; align-items:center; gap:4px;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .4px;
+    transition: color .2s;
+  }
+  .bnav-item.active { color: var(--green); }
+  .bnav-item svg { width:22px; height:22px; }
+  .bnav-item.active svg { stroke: var(--green); }
+  .bnav-item svg { stroke: var(--muted); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .bnav-dot {
+    width: 5px; height: 5px;
+    background: var(--green);
+    border-radius: 50%;
+    display: none;
+  }
+  .bnav-item.active .bnav-dot { display: block; }
+</style>
+@media (max-width: 420px) {
+  .stage {
+    max-width: 100vw;
+    padding: 0 2vw;
+  }
+  .proto-nav {
+    padding: 12px 8px;
+  }
+  .modules-list, .port-body, .sim-body {
+    padding: 12px 4px;
+  }
+}
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="proto-nav">
+  <span aria-label="Navegação de telas" role="navigation">TELAS →</span>
+  <button class="nav-btn active" onclick="goTo('login', this)" aria-current="page" aria-label="Tela de Login">01 Login</button>
+  <button class="nav-btn" onclick="goTo('diag', this)" aria-label="Tela de Diagnóstico">02 Diagnóstico</button>
+  <button class="nav-btn" onclick="goTo('trilha', this)" aria-label="Tela de Trilha">03 Trilha</button>
+  <button class="nav-btn" onclick="goTo('portfolio', this)" aria-label="Tela de Portfólio">04 Portfólio</button>
+  <button class="nav-btn" onclick="goTo('simul', this)" aria-label="Tela de Simulador">05 Simulador</button>
+</nav>
+
+<div class="stage">
+
+  <!-- ── S1 LOGIN ── -->
+  <div class="screen visible" id="s-login">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="login-title">CarreiraTech</div>
+    <div class="login-sub">Sua trilha para o mercado de TI</div>
+    <div class="login-form">
+      <form id="loginForm" onsubmit="return validateLogin(event)">
+        <div class="input-wrap">
+          <label for="loginEmail">E-mail</label>
+          <input id="loginEmail" type="email" placeholder="seu@email.com" required aria-required="true"/>
+        </div>
+        <div class="input-wrap">
+          <label for="loginSenha">Senha</label>
+          <input id="loginSenha" type="password" placeholder="••••••••" required aria-required="true" minlength="6"/>
+        </div>
+        <button class="btn-primary" type="submit">Entrar</button>
+        <div id="loginError" style="color:#E53935; margin-top:8px; display:none; font-size:13px; text-align:center;"></div>
+      </form>
+    </div>
+    <div class="divider-or"><hr/><span>ou</span><hr/></div>
+    <div class="login-links">
+      <a href="#" role="button" tabindex="0" onclick="goTo('diag', document.querySelectorAll('.nav-btn')[1])" aria-label="Cadastre-se grátis">Não tem conta? <strong>Cadastre-se grátis</strong></a>
+      <a href="#" role="button" tabindex="0" aria-label="Esqueci minha senha">Esqueci minha senha</a>
+    </div>
+  </div>
+
+  <!-- ── S2 DIAGNÓSTICO ── -->
+  <div class="screen" id="s-diag">
+    <div class="top-bar">
+      <div class="top-bar-row">
+        <div class="logo-pill">CarreiraTech</div>
+        <div class="tag-diag">Diagnóstico</div>
+      </div>
+      <div class="top-bar-row" style="margin-bottom:8px;">
+        <span style="color:rgba(255,255,255,.7);font-size:14px;">Questão <strong id="q-num">1</strong> de 8</span>
+        <span class="q-counter" id="q-pct">13%</span>
+      </div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar-fill" id="prog-fill" style="width:13%"></div>
+      </div>
+    </div>
+
+    <div class="q-body">
+      <div class="q-text" id="q-text">Qual é o seu maior desafio ao estudar para vagas de TI?</div>
+      <div class="q-hint">Selecione a opção que mais se aproxima da sua realidade</div>
+      <div class="answers" id="answers">
+        <div class="answer-opt" onclick="selectAnswer(this)">
+          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          Falta de tempo para estudar com consistência
+        </div>
+        <div class="answer-opt" onclick="selectAnswer(this)">
+          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          Não saber por onde começar ou o que priorizar
+        </div>
+        <div class="answer-opt" onclick="selectAnswer(this)">
+          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          Ansiedade durante entrevistas e processos seletivos
+        </div>
+        <div class="answer-opt" onclick="selectAnswer(this)">
+          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          Dificuldade com o inglês técnico
+        </div>
+      </div>
+    </div>
+
+    <div class="q-actions">
+      <button class="btn-sec" onclick="goTo('login', document.querySelectorAll('.nav-btn')[0])" aria-label="Voltar para login">Voltar</button>
+      <button class="btn-next" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])" aria-label="Ir para trilha">Próxima →</button>
+    </div>
+  </div>
+
+  <!-- ── S3 TRILHA ── -->
+  <div class="screen" id="s-trilha">
+    <div class="trilha-header">
+      <div class="logo-pill">CarreiraTech</div>
+      <div class="trilha-title">Sua Trilha</div>
+      <div class="trilha-sub">Personalizada com base no seu diagnóstico</div>
+      <div class="trilha-prog-row">
+        <div class="trilha-prog-bar"><div class="trilha-prog-fill"></div></div>
+        <span class="trilha-prog-label">32%</span>
+      </div>
+    </div>
+
+    <div class="modules-list">
+      <!-- done -->
+      <div class="module-card" tabindex="0" aria-label="Fundamentos de TI concluído">
+        <div class="mod-icon done">✅</div>
+        <div class="mod-info">
+          <div class="mod-name">Fundamentos de TI</div>
+          <div class="mod-desc">Lógica, redes e sistemas operacionais</div>
+          <span class="mod-pill pill-done">Concluído</span>
+        </div>
+        <div class="mod-right"><span class="check-icon">✓</span></div>
+      </div>
+      <!-- active -->
+      <div class="module-card active" tabindex="0" aria-label="Entrevistas Técnicas em andamento" onclick="goTo('simul', document.querySelectorAll('.nav-btn')[4])">
+        <div class="mod-icon active">📘</div>
+        <div class="mod-info">
+          <div class="mod-name">Entrevistas Técnicas</div>
+          <div class="mod-desc">Algoritmos, estrutura de dados e DSA</div>
+          <span class="mod-pill pill-active">Em andamento</span>
+        </div>
+        <div class="mod-right"><span class="arrow-icon">→</span></div>
+      </div>
+      <!-- locked -->
+      <div class="module-card locked" tabindex="0" aria-label="Currículo & LinkedIn bloqueado">
+        <div class="mod-icon locked">🔒</div>
+        <div class="mod-info">
+          <div class="mod-name">Currículo & LinkedIn</div>
+          <div class="mod-desc">Portfólio e perfil profissional</div>
+          <span class="mod-pill pill-locked">Bloqueado</span>
+        </div>
+        <div class="mod-right"><span class="lock-icon">🔒</span></div>
+      </div>
+      <div class="module-card locked" tabindex="0" aria-label="Inglês Técnico bloqueado">
+        <div class="mod-icon locked">🔒</div>
+        <div class="mod-info">
+          <div class="mod-name">Inglês Técnico</div>
+          <div class="mod-desc">Vocabulário e comunicação em TI</div>
+          <span class="mod-pill pill-locked">Bloqueado</span>
+        </div>
+        <div class="mod-right"><span class="lock-icon">🔒</span></div>
+      </div>
+      <div class="module-card locked" tabindex="0" aria-label="Simulado Final bloqueado">
+        <div class="mod-icon locked">🔒</div>
+        <div class="mod-info">
+          <div class="mod-name">Simulado Final</div>
+          <div class="mod-desc">Processo seletivo completo</div>
+          <span class="mod-pill pill-locked">Bloqueado</span>
+        </div>
+        <div class="mod-right"><span class="lock-icon">🔒</span></div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="bnav-item" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        <span>Trilha</span><div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item active" onclick="goTo('portfolio', document.querySelectorAll('.nav-btn')[3])">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Portfólio</span><div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item" onclick="goTo('simul', document.querySelectorAll('.nav-btn')[4])">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Simulador</span><div class="bnav-dot"></div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ── S4 PORTFÓLIO ── -->
+  <div class="screen" id="s-portfolio">
+    <div class="port-header">
+      <div class="logo-pill">CarreiraTech</div>
+      <div class="port-title">Meu Portfólio</div>
+      <div class="port-sub">Acompanhe sua evolução</div>
+    </div>
+
+    <div class="port-body">
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-num green">32%</span>
+          <span class="stat-label">Progresso geral</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num">1/5</span>
+          <span class="stat-label">Módulos concluídos</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-num green">7</span>
+          <span class="stat-label">Dias seguidos</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="card-title">Desempenho por área</div>
+        <div class="bar-chart">
+          <div class="bar-col">
+            <div class="bar-fill green" style="height:80px"></div>
+            <span class="bar-label">Fund.</span>
+          </div>
+          <div class="bar-col">
+            <div class="bar-fill" style="height:55px"></div>
+            <span class="bar-label">Entrev.</span>
+          </div>
+          <div class="bar-col">
+            <div class="bar-fill" style="height:30px; opacity:.35;"></div>
+            <span class="bar-label">CV</span>
+          </div>
+          <div class="bar-col">
+            <div class="bar-fill" style="height:20px; opacity:.35;"></div>
+            <span class="bar-label">Inglês</span>
+          </div>
+          <div class="bar-col">
+            <div class="bar-fill" style="height:10px; opacity:.25;"></div>
+            <span class="bar-label">Simul.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="checklist-card">
+        <div class="card-title">Checklist de prontidão</div>
+        <div class="check-item">
+          <div class="check-box done">✓</div>
+          <span class="check-text done">Completar diagnóstico inicial</span>
+        </div>
+        <div class="check-item">
+          <div class="check-box done">✓</div>
+          <span class="check-text done">Concluir módulo de Fundamentos</span>
+        </div>
+        <div class="check-item">
+          <div class="check-box done">✓</div>
+          <span class="check-text done">Fazer 1° simulado de entrevista</span>
+        </div>
+        <div class="check-item">
+          <div class="check-box todo"></div>
+          <span class="check-text">Atualizar currículo no LinkedIn</span>
+        </div>
+        <div class="check-item">
+          <div class="check-box todo"></div>
+          <span class="check-text">Completar módulo de Inglês Técnico</span>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="bnav-item" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        <span>Trilha</span><div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item active">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Portfólio</span><div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item" onclick="goTo('simul', document.querySelectorAll('.nav-btn')[4])">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Simulador</span><div class="bnav-dot"></div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ── S5 SIMULADOR ── -->
+  <div class="screen" id="s-simul">
+    <div class="sim-header">
+      <div class="logo-pill">Michi</div>
+      <div class="sim-title">Simulador</div>
+      <div class="sim-sub">Pratique antes de enfrentar o mercado</div>
+    </div>
+
+    <div class="sim-body">
+      <div class="sim-card active-sim">
+        <div class="sim-icon">🎙️</div>
+        <div class="sim-info">
+          <div class="sim-name">Entrevista Técnica</div>
+          <div class="sim-desc">Responda perguntas com feedback imediato de IA</div>
+          <div class="sim-meta">
+            <span class="meta-tag meta-q">20 perguntas</span>
+            <span class="meta-tag meta-time">~30 min</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-card active-sim">
+        <div class="sim-icon">📄</div>
+        <div class="sim-info">
+          <div class="sim-name">Análise de Currículo</div>
+          <div class="sim-desc">Envie seu CV e receba sugestões personalizadas</div>
+          <div class="sim-meta">
+            <span class="meta-tag meta-q">Upload</span>
+            <span class="meta-tag meta-time">~10 min</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-card locked-sim">
+        <div class="sim-icon locked-sim">🌐</div>
+        <div class="sim-info">
+          <div class="sim-name">Inglês Técnico</div>
+          <div class="sim-desc">Simulação de entrevista em inglês</div>
+          <div class="sim-meta">
+            <span class="meta-tag meta-q" style="background:#F0F3F6;color:var(--muted)">Bloqueado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sim-card locked-sim">
+        <div class="sim-icon locked-sim">🏆</div>
+        <div class="sim-info">
+          <div class="sim-name">Processo Seletivo Completo</div>
+          <div class="sim-desc">Simulação realista de ponta a ponta</div>
+          <div class="sim-meta">
+            <span class="meta-tag meta-q" style="background:#F0F3F6;color:var(--muted)">Bloqueado</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="bnav-item" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        <span>Trilha</span><div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item" onclick="goTo('portfolio', document.querySelectorAll('.nav-btn')[3])">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>Portfólio</span><div class="bnav-dot"></div>
+      </div>
+      <div class="bnav-item active">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span>Simulador</span><div class="bnav-dot"></div>
+      </div>
+    </nav>
+  </div>
+
+</div><!-- /stage -->
+
+<script>
+  const screens = { login:'s-login', diag:'s-diag', trilha:'s-trilha', portfolio:'s-portfolio', simul:'s-simul' };
+
+  function goTo(key, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    document.getElementById(screens[key]).classList.add('visible');
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+
+  function selectAnswer(el) {
+    document.querySelectorAll('.answer-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function validateLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const senha = document.getElementById('loginSenha').value.trim();
+    const errorDiv = document.getElementById('loginError');
+    errorDiv.style.display = 'none';
+    if (!email || !senha) {
+      errorDiv.textContent = 'Preencha todos os campos.';
+      errorDiv.style.display = 'block';
+      return false;
+    }
+    if (senha.length < 6) {
+      errorDiv.textContent = 'A senha deve ter pelo menos 6 caracteres.';
+      errorDiv.style.display = 'block';
+      return false;
+    }
+    // Simulação de login: só permite email demo e senha demo
+    if (email !== 'demo@email.com' || senha !== 'demosenha') {
+      errorDiv.textContent = 'E-mail ou senha incorretos.';
+      errorDiv.style.display = 'block';
+      return false;
+    }
+    goTo('diag', document.querySelectorAll('.nav-btn')[1]);
+    return false;
+  }
+</script>
+</body>
+</html>
