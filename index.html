@@ -1,612 +1,274 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Protótipo – Média Fidelidade</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
-<style>
-  :root {
-    --navy:   #1A2B3C;
-    --green:  #27AE60;
-    --green-d:#1E8449;
-    --bg:     #F4F4F4;
-    --card:   #FFFFFF;
-    --muted:  #8A9BAD;
-    --border: #D8E0E8;
-    --red:    #E53935;
-    --gold:   #F39C12;
-    --text:   #1A2B3C;
-    --radius: 12px;
-    --shadow: 0 4px 20px rgba(26,43,60,.10);
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Michi – Protótipo</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:   #1A2B3C;
+      --green:  #1E8449;
+      --green-d:#1E8449;
+      --bg:     #F4F4F4;
+      --card:   #FFFFFF;
+      --muted:  #4A5A68;
+      --border: #D8E0E8;
+      --text:   #1A2B3C;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(26,43,60,.10);
+      --muted-light: #5A6B79;
+    }
 
-  *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: #E8EDF2;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0;
-  }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #E8EDF2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  /* ── NAV BAR ── */
-  .proto-nav {
-    width: 100%;
-    background: var(--navy);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 24px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 12px rgba(0,0,0,.25);
-  }
-  .proto-nav span {
-    color: rgba(255,255,255,.5);
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
-    margin-right: 8px;
-  }
-  .nav-btn {
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.15);
-    color: #fff;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-family: 'DM Sans', sans-serif;
-    cursor: pointer;
-    transition: background .2s;
-  }
-  .nav-btn:hover { background: rgba(255,255,255,.18); }
-  .nav-btn.active {
-    background: var(--green);
-    border-color: var(--green);
-  }
+    /* NAV */
+    .proto-nav {
+      width: 100%;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.25);
+    }
+    .proto-nav span { color: rgba(255,255,255,.7); font-size: 12px; font-family: 'DM Mono', monospace; margin-right: 8px; }
+    .nav-btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.9); padding: 6px 14px; border-radius: 6px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background .2s; }
+    .nav-btn:hover { background: rgba(255,255,255,.18); }
+    .nav-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
 
-  /* ── PHONE SHELL ── */
-  .stage {
-    width: 100%;
-    max-width: 390px;
-    min-height: calc(100vh - 56px);
-    display: flex;
-    flex-direction: column;
-  }
+    /* STAGE / SCREENS */
+    .stage { width: 100%; max-width: 390px; min-height: calc(100vh - 56px); display: flex; flex-direction: column; }
+    .screen { display: none; flex-direction: column; min-height: calc(100vh - 56px); background: var(--bg); animation: fadeIn .3s ease; }
+    /* focus outlines */
+    button:focus, .nav-btn:focus, input:focus, .answer-opt:focus { outline: 2px solid var(--green); outline-offset: 2px; }
 
-  /* ── SCREENS ── */
-  .screen {
-    display: none;
-    flex-direction: column;
-    min-height: calc(100vh - 56px);
-    background: var(--bg);
-    animation: fadeIn .3s ease;
-  }
-  .screen.visible { display: flex; }
-  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    /* feedback components */
+    .login-error { color: #E74C3C; font-size: 13px; margin-top: 8px; display: none; }
+    .login-error.visible { display: block; }
+    .toast { position: fixed; bottom: 80px; left:50%; transform: translateX(-50%); background: var(--green); color:#fff; padding:12px 24px; border-radius:24px; box-shadow:var(--shadow); opacity:0; transition:opacity .3s; pointer-events:none; z-index:200; }
+    .toast.show { opacity:1; }
 
-  /* ─────────────────────────────────────────── */
-  /* SCREEN 1 – LOGIN                            */
-  /* ─────────────────────────────────────────── */
-  #s-login {
-    background: var(--navy);
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    padding: 48px 32px;
-  }
-  .login-logo {
-    width: 80px; height: 80px;
-    background: var(--green);
-    border-radius: 20px;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 32px;
-    box-shadow: 0 8px 32px rgba(39,174,96,.35);
-  }
-  .login-logo svg { width: 42px; height: 42px; fill: #fff; }
-  .login-title {
-    color: #fff;
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -.5px;
-    margin-bottom: 6px;
-    text-align: center;
-  }
-  .login-sub {
-    color: var(--muted);
-    font-size: 14px;
-    margin-bottom: 40px;
-    text-align: center;
-  }
-  .login-form { width: 100%; display: flex; flex-direction: column; gap: 14px; }
-  .input-wrap { position: relative; }
-  .input-wrap label {
-    color: rgba(255,255,255,.55);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .8px;
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 6px;
-  }
-  .input-wrap input {
-    width: 100%;
-    background: rgba(255,255,255,.07);
-    border: 1.5px solid rgba(255,255,255,.12);
-    border-radius: 10px;
-    padding: 14px 16px;
-    color: #fff;
-    font-size: 15px;
-    font-family: 'DM Sans', sans-serif;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .input-wrap input:focus { border-color: var(--green); }
-  .input-wrap input::placeholder { color: rgba(255,255,255,.25); }
-  .btn-primary {
-    margin-top: 8px;
-    width: 100%;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .2s, transform .1s;
-    min-height: 52px;
-  }
-  .btn-primary:hover { background: var(--green-d); }
-  .btn-primary:active { transform: scale(.98); }
-  .login-links {
-    margin-top: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  .login-links a {
-    color: var(--muted);
-    font-size: 13px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: color .2s;
-  }
-  .login-links a:hover { color: var(--green); }
-  .login-links a strong { color: var(--green); }
-  .divider-or {
-    width: 100%; display: flex; align-items: center; gap: 12px; margin: 20px 0 4px;
-  }
-  .divider-or hr { flex:1; border:none; border-top: 1px solid rgba(255,255,255,.1); }
-  .divider-or span { color: rgba(255,255,255,.3); font-size: 12px; }
+    .answer-opt .opt-tag { margin-left:auto; font-size:12px; font-weight:600; color:var(--green); display:none; }
+    .answer-opt.selected .opt-tag { display:block; }
+    .answer-opt .opt-circle svg { opacity:0; }
+    .answer-opt.selected .opt-circle svg { opacity:1; }
+    .screen.visible { display: flex; }
+    /* garantia adicional – se por algum motivo a tela estiver escondida, tudo dentro desaparece */
+    .screen:not(.visible) .q-actions { display: none !important; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
 
-  /* ─────────────────────────────────────────── */
-  /* SCREEN 2 – DIAGNÓSTICO                      */
-  /* ─────────────────────────────────────────── */
-  #s-diag {
-    background: var(--bg);
-    flex-direction: column;
-  }
-  .top-bar {
-    background: var(--navy);
-    padding: 20px 24px 16px;
-  }
-  .top-bar-row {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
-  }
-  .logo-pill {
-    background: var(--green);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 5px 14px;
-    border-radius: 20px;
-  }
-  .tag-diag {
-    background: rgba(255,255,255,.12);
-    color: rgba(255,255,255,.7);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    padding: 4px 10px;
-    border-radius: 6px;
-  }
-  .q-counter {
-    color: rgba(255,255,255,.5);
-    font-size: 12px;
-    font-family: 'DM Mono', monospace;
-  }
-  .prog-bar-wrap {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,.15);
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .prog-bar-fill {
-    height: 100%;
-    background: var(--green);
-    border-radius: 3px;
-    transition: width .4s ease;
-  }
-  .q-body { padding: 28px 24px; flex:1; display:flex; flex-direction:column; gap:20px; }
-  .q-text {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.45;
-  }
-  .q-hint {
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: -12px;
-  }
-  .answers { display:flex; flex-direction:column; gap:10px; }
-  .answer-opt {
-    background: #fff;
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    font-size: 15px;
-    color: var(--text);
-    cursor: pointer;
-    transition: border-color .2s, background .2s;
-    display: flex; align-items: center; gap: 12px;
-    min-height: 52px;
-  }
-  .answer-opt:hover { border-color: var(--green); background: #F0FBF4; }
-  .answer-opt.selected { border-color: var(--green); background: #F0FBF4; }
-  .opt-circle {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: border-color .2s, background .2s;
-  }
-  .answer-opt.selected .opt-circle {
-    border-color: var(--green);
-    background: var(--green);
-  }
-  .opt-check { width:10px; height:10px; fill:#fff; }
-  .q-actions {
-    display: flex; gap: 12px; padding: 0 24px 28px;
-  }
-  .btn-sec {
-    flex:1;
-    background: #fff;
-    color: var(--navy);
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 15px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: border-color .2s;
-    min-height: 52px;
-  }
-  .btn-sec:hover { border-color: var(--navy); }
-  .btn-next {
-    flex: 2;
-    background: var(--green);
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .2s;
-    min-height: 52px;
-  }
-  .btn-next:hover { background: var(--green-d); }
+    /* LOGIN */
+    #s-login { background: var(--navy); align-items: center; justify-content: center; padding: 48px 32px; }
+    .login-logo { width: 80px; height: 80px; background: var(--green); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 32px; box-shadow: 0 8px 32px rgba(39,174,96,.35); }
+    .login-title { color: #fff; font-size: 26px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 6px; text-align: center; }
+    .login-sub { color: rgba(255,255,255,.75); font-size: 14px; margin-bottom: 40px; text-align: center; }
+    .login-form { width: 100%; display: flex; flex-direction: column; gap: 14px; }
+    .input-wrap label { color: rgba(255,255,255,.55); font-size: 11px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; display: block; margin-bottom: 6px; }
+    .input-wrap input { width: 100%; background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.12); border-radius: 10px; padding: 14px 16px; color: #fff; font-size: 15px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color .2s; }
+    .input-wrap input:focus { border-color: var(--green); }
+    .input-wrap input::placeholder { color: rgba(255,255,255,.5); }
+    .btn-primary { margin-top: 8px; width: 100%; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; transition: background .2s, transform .1s; min-height: 52px; }
+    .btn-primary:hover { background: var(--green-d); }
+    .btn-primary:active { transform: scale(.98); }
+    .login-links { margin-top: 24px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .login-links a { color: rgba(255,255,255,.75); font-size: 13px; text-decoration: none; cursor: pointer; transition: color .2s; }
+    .login-links a:hover { color: var(--green); }
+    .login-links a strong { color: var(--green); font-weight: 700; }
+    .divider-or { width: 100%; display: flex; align-items: center; gap: 12px; margin: 20px 0 4px; }
+    .divider-or hr { flex:1; border:none; border-top: 1px solid rgba(255,255,255,.2); }
+    .divider-or span { color: rgba(255,255,255,.5); font-size: 12px; }
 
-  /* ─────────────────────────────────────────── */
-  /* SCREEN 3 – TRILHA                           */
-  /* ─────────────────────────────────────────── */
-  #s-trilha { background: var(--bg); }
-  .trilha-header {
-    background: var(--navy);
-    padding: 20px 24px 24px;
-  }
-  .trilha-title {
-    color: #fff;
-    font-size: 22px;
-    font-weight: 700;
-    margin: 12px 0 4px;
-  }
-  .trilha-sub { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
-  .trilha-prog-row {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .trilha-prog-bar {
-    flex:1; height: 8px;
-    background: rgba(255,255,255,.15);
-    border-radius: 4px; overflow:hidden;
-  }
-  .trilha-prog-fill {
-    width: 32%;
-    height: 100%;
-    background: var(--green);
-    border-radius: 4px;
-  }
-  .trilha-prog-label {
-    color: var(--green);
-    font-size: 13px;
-    font-weight: 700;
-    font-family: 'DM Mono', monospace;
-  }
-  .modules-list { padding: 20px 24px; display:flex; flex-direction:column; gap:12px; flex:1; }
-  .module-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 18px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    transition: transform .2s, box-shadow .2s;
-    border: 2px solid transparent;
-  }
-  .module-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,43,60,.13); }
-  .module-card.locked { opacity: .55; cursor: not-allowed; }
-  .module-card.active { border-color: var(--green); }
-  .mod-icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    font-size: 22px;
-  }
-  .mod-icon.done { background: #E8F8EF; }
-  .mod-icon.active { background: #E8F8EF; }
-  .mod-icon.locked { background: #F0F3F6; }
-  .mod-info { flex:1; }
-  .mod-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .mod-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-  .mod-pill {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 6px;
-    display: inline-block;
-  }
-  .pill-done { background: #E8F8EF; color: var(--green-d); }
-  .pill-active { background: #E8F8EF; color: var(--green-d); }
-  .pill-locked { background: #F0F3F6; color: var(--muted); }
-  .mod-right { display:flex; align-items:center; }
-  .lock-icon { color: var(--muted); font-size: 18px; }
-  .check-icon { color: var(--green); font-size: 20px; }
-  .arrow-icon { color: var(--green); font-size: 20px; }
+    /* DIAGNÓSTICO */
+    #s-diag { background: var(--bg); flex-direction: column; }
+    .top-bar { background: var(--navy); padding: 20px 24px 16px; }
+    .top-bar-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .logo-pill { background: var(--green); color: #fff; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 20px; }
+    .tag-diag { background: rgba(255,255,255,.12); color: rgba(255,255,255,.9); font-size: 11px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; }
+    .q-counter { color: rgba(255,255,255,.75); font-size: 12px; font-family: 'DM Mono', monospace; }
+    .prog-bar-wrap { width: 100%; height: 6px; background: rgba(255,255,255,.15); border-radius: 3px; overflow: hidden; }
+    .prog-bar-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+    .q-body { padding: 28px 24px; flex:1; display:flex; flex-direction:column; gap:20px; }
+    .q-text { font-size: 18px; font-weight: 600; color: var(--text); line-height: 1.45; }
+    .q-hint { font-size: 13px; color: var(--muted); margin-top: -12px; }
+    .answers { display:flex; flex-direction:column; gap:10px; }
+    .answers.slide-out { animation: slideOut .22s ease forwards; }
+    .answers.slide-in  { animation: slideIn  .22s ease forwards; }
+    @keyframes slideOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(-32px); } }
+    @keyframes slideIn  { from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:translateX(0); } }
+    .answer-opt { background: #fff; border: 2px solid var(--border); border-radius: var(--radius); padding: 16px 18px; font-size: 15px; color: var(--text); cursor: pointer; transition: border-color .2s, background .2s; display: flex; align-items: center; gap: 12px; min-height: 52px; }
+    .answer-opt:hover { border-color: var(--green); background: #F0FBF4; }
+    .answer-opt.selected { border-color: var(--green); background: #F0FBF4; }
+    .opt-circle { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color .2s, background .2s; }
+    .answer-opt.selected .opt-circle { border-color: var(--green); background: var(--green); }
+    .q-actions { display: flex; gap: 12px; padding: 0 24px 28px; }
+    .btn-sec { flex:1; background: #fff; color: var(--navy); border: 2px solid var(--border); border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 600; cursor: pointer; transition: border-color .2s; min-height: 52px; }
+    .btn-sec:hover { border-color: var(--navy); }
+    .btn-next { flex: 2; background: var(--green); color: #fff; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; transition: background .2s, transform .15s; min-height: 52px; }
+    .btn-next:hover { background: var(--green-d); }
+    .btn-next:active { transform: scale(.97); }
+    .btn-next.finish { background: var(--navy); }
+    .btn-next.finish:hover { background: #0f1c28; }
 
-  /* ─────────────────────────────────────────── */
-  /* SCREEN 4 – PORTFÓLIO                        */
-  /* ─────────────────────────────────────────── */
-  #s-portfolio { background: var(--bg); }
-  .port-header {
-    background: var(--navy);
-    padding: 20px 24px 24px;
-  }
-  .port-title { color:#fff; font-size:22px; font-weight:700; margin: 10px 0 4px; }
-  .port-sub { color: var(--muted); font-size:13px; }
-  .port-body { padding: 20px 24px; display:flex; flex-direction:column; gap:16px; flex:1; }
-  .chart-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-  }
-  .card-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--muted);
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-  .bar-chart {
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    height: 100px;
-  }
-  .bar-col { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
-  .bar-fill {
-    width: 100%;
-    border-radius: 6px 6px 0 0;
-    background: var(--navy);
-    transition: height .4s ease;
-  }
-  .bar-fill.green { background: var(--green); }
-  .bar-label { font-size: 10px; color: var(--muted); font-family:'DM Mono',monospace; }
-  .checklist-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-  }
-  .check-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .check-item:last-child { border-bottom: none; }
-  .check-box {
-    width: 22px; height: 22px;
-    border-radius: 6px;
-    flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px;
-  }
-  .check-box.done { background: var(--green); color: #fff; }
-  .check-box.todo { background: var(--border); color: transparent; }
-  .check-text { font-size: 14px; color: var(--text); }
-  .check-text.done { text-decoration: line-through; color: var(--muted); }
-  .stats-row { display: flex; gap: 12px; }
-  .stat-card {
-    flex:1;
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 16px;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-  .stat-num { font-size: 26px; font-weight: 700; color: var(--navy); font-family:'DM Mono',monospace; }
-  .stat-num.green { color: var(--green); }
-  .stat-label { font-size: 11px; color: var(--muted); text-align:center; }
+    /* TRILHA */
+    #s-trilha { background: var(--bg); }
+    .trilha-header { background: var(--navy); padding: 20px 24px 24px; }
+    .trilha-title { color: #fff; font-size: 22px; font-weight: 700; margin: 12px 0 4px; }
+    .trilha-sub { color: rgba(255,255,255,.75); font-size: 13px; margin-bottom: 16px; }
+    .trilha-prog-row { display: flex; align-items: center; gap: 10px; }
+    .trilha-prog-bar { flex:1; height: 8px; background: rgba(255,255,255,.15); border-radius: 4px; overflow:hidden; }
+    .trilha-prog-fill { width: 32%; height: 100%; background: var(--green); border-radius: 4px; }
+    .trilha-prog-label { color: var(--green); font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; }
+    .modules-list { padding: 20px 24px; display:flex; flex-direction:column; gap:12px; flex:1; }
+    .module-card { background: var(--card); border-radius: var(--radius); padding: 18px; display: flex; align-items: center; gap: 16px; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s, box-shadow .2s; border: 2px solid transparent; }
+    .module-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,43,60,.13); }
+    .module-card.locked { /* keep text contrast, use grayscale */ opacity: 1; filter: grayscale(0.5); cursor: not-allowed; position: relative; }
+    .module-card.locked .mod-name,
+    .module-card.locked .mod-desc,
+    .module-card.locked .mod-pill,
+    .module-card.locked .lock-icon { color: var(--muted-light); }
+    .pill-locked { background: #E0E4E8; color: #333; }
+    .module-card.active { border-color: var(--green); }
+    .mod-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 22px; }
+    .mod-icon.done   { background: #E8F8EF; }
+    .mod-icon.active { background: #E8F8EF; }
+    .mod-icon.locked { background: #F0F3F6; }
+    .mod-info { flex:1; }
+    .mod-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+    .mod-desc { font-size: 12px; color: #444; margin-bottom: 8px; }
+    .mod-pill { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; display: inline-block; }
+    .pill-done   { background: #E8F8EF; color: var(--green-d); }
+    .pill-active { background: #E8F8EF; color: var(--green-d); }
+    .pill-locked { background: #F0F3F6; color: var(--muted); }
+    .mod-right { display:flex; align-items:center; }
+    .check-icon { color: var(--green); font-size: 20px; }
+    .arrow-icon { color: var(--green); font-size: 20px; }
+    .lock-icon  { color: var(--muted); font-size: 18px; }
 
-  /* ─────────────────────────────────────────── */
-  /* SCREEN 5 – SIMULADOR                        */
-  /* ─────────────────────────────────────────── */
-  #s-simul { background: var(--bg); }
-  .sim-header {
-    background: var(--navy);
-    padding: 20px 24px 24px;
-  }
-  .sim-title { color:#fff; font-size:22px; font-weight:700; margin:10px 0 4px; }
-  .sim-sub { color: var(--muted); font-size:13px; }
-  .sim-body { padding: 20px 24px; display:flex; flex-direction:column; gap:12px; flex:1; }
-  .sim-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-    cursor: pointer;
-    transition: transform .2s, box-shadow .2s;
-    border-left: 4px solid transparent;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  .sim-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,43,60,.13); }
-  .sim-card.active-sim { border-left-color: var(--green); }
-  .sim-card.locked-sim { opacity:.5; cursor:not-allowed; border-left-color: var(--border); }
-  .sim-icon {
-    width: 48px; height: 48px;
-    border-radius: 12px;
-    background: #E8F8EF;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    flex-shrink:0;
-  }
-  .sim-icon.locked-sim { background: #F0F3F6; }
-  .sim-info { flex:1; }
-  .sim-name { font-size:16px; font-weight:700; color:var(--text); margin-bottom:4px; }
-  .sim-desc { font-size:13px; color:var(--muted); margin-bottom:8px; }
-  .sim-meta {
-    display:flex; gap:8px;
-  }
-  .meta-tag {
-    font-size:11px; font-weight:600;
-    padding: 3px 8px; border-radius:6px;
-  }
-  .meta-q { background:#EEF2FF; color:#4F6DDE; }
-  .meta-time { background:#FEF3E2; color:#B7770D; }
+    /* PORTFÓLIO */
+    #s-portfolio { background: var(--bg); }
+    .port-header { background: var(--navy); padding: 20px 24px 24px; }
+    .port-title { color:#fff; font-size:22px; font-weight:700; margin: 10px 0 4px; }
+    .port-sub   { color: rgba(255,255,255,.75); font-size:13px; }
+    .port-body  { padding: 20px 24px; display:flex; flex-direction:column; gap:16px; flex:1; }
+    .chart-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .card-title { font-size: 13px; font-weight: 700; color: #555; letter-spacing: .6px; text-transform: uppercase; margin-bottom: 16px; }
+    .bar-chart  { display: flex; align-items: flex-end; gap: 10px; height: 100px; }
+    .bar-col    { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+    .bar-fill   { width: 100%; border-radius: 6px 6px 0 0; background: var(--navy); }
+    .bar-fill.green { background: var(--green); }
+    .bar-label  { font-size: 10px; color: #666; font-family:'DM Mono',monospace; }
+    .checklist-card { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+    .check-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .check-item:last-child { border-bottom: none; }
+    .check-box  { width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+    .check-box.done { background: var(--green); color: #fff; }
+    .check-box.todo { background: var(--border); }
+    .check-text { font-size: 14px; color: var(--text); }
+    .check-text.done { text-decoration: line-through; color: #999; }
+    .stats-row  { display: flex; gap: 12px; }
+    .stat-card  { flex:1; background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .stat-num   { font-size: 26px; font-weight: 700; color: var(--navy); font-family:'DM Mono',monospace; }
+    .stat-num.green { color: var(--green); }
+    .stat-label { font-size: 11px; color: #666; text-align:center; }
 
-  /* ─────────────────────────────────────────── */
-  /* BOTTOM NAV                                  */
-  /* ─────────────────────────────────────────── */
-  .bottom-nav {
-    display: flex;
-    background: #fff;
-    border-top: 1px solid var(--border);
-    padding: 12px 0 20px;
-  }
-  .bnav-item {
-    flex:1;
-    display: flex; flex-direction:column; align-items:center; gap:4px;
-    cursor: pointer;
-    color: var(--muted);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: .4px;
-    transition: color .2s;
-  }
-  .bnav-item.active { color: var(--green); }
-  .bnav-item svg { width:22px; height:22px; }
-  .bnav-item.active svg { stroke: var(--green); }
-  .bnav-item svg { stroke: var(--muted); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .bnav-dot {
-    width: 5px; height: 5px;
-    background: var(--green);
-    border-radius: 50%;
-    display: none;
-  }
-  .bnav-item.active .bnav-dot { display: block; }
+    /* SIMULADOR */
+    #s-simul    { background: var(--bg); }
+    .sim-header { background: var(--navy); padding: 20px 24px 24px; }
+    .sim-title  { color:#fff; font-size:22px; font-weight:700; margin:10px 0 4px; }
+    .sim-sub    { color: rgba(255,255,255,.75); font-size:13px; }
+    .sim-body   { padding: 20px 24px; display:flex; flex-direction:column; gap:12px; flex:1; }
+    .sim-card   { background: var(--card); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); cursor: pointer; transition: transform .2s, box-shadow .2s; border-left: 4px solid transparent; display: flex; align-items: center; gap: 16px; }
+    .sim-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(26,43,60,.13); }
+    .sim-card.active-sim { border-left-color: var(--green); }
+    .sim-card.locked-sim { opacity:.5; cursor:not-allowed; border-left-color: var(--border); }
+    .sim-icon   { width: 48px; height: 48px; border-radius: 12px; background: #E8F8EF; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink:0; }
+    .sim-icon.locked-bg { background: #F0F3F6; }
+    .sim-info   { flex:1; }
+    .sim-name   { font-size:16px; font-weight:700; color:var(--text); margin-bottom:4px; }
+    .sim-desc   { font-size:13px; color:#666; margin-bottom:8px; }
+    .sim-meta   { display:flex; gap:8px; }
+    .meta-tag   { font-size:11px; font-weight:600; padding: 3px 8px; border-radius:6px; }
+    .meta-q     { background:#EEF2FF; color:#4F6DDE; }
+    .meta-time  { background:#FEF3E2; color:#B7770D; }
+    .meta-lock  { background:#F0F3F6; color:#555; }
 
-@media (max-width: 420px) {
-  .stage {
-    max-width: 100vw;
-    padding: 0 2vw;
-  }
-  .proto-nav {
-    padding: 12px 8px;
-  }
-  .modules-list, .port-body, .sim-body {
-    padding: 12px 4px;
-  }
-}
-</style>
+    /* BOTTOM NAV */
+    .bottom-nav  { display: flex; background: #fff; border-top: 1px solid var(--border); padding: 12px 0 20px; }
+    .bnav-item   { flex:1; display: flex; flex-direction:column; align-items:center; gap:4px; cursor: pointer; color: #888; font-size: 10px; font-weight: 600; letter-spacing: .4px; transition: color .2s; }
+    .bnav-item.active { color: var(--green); }
+    .bnav-dot    { width: 5px; height: 5px; background: var(--green); border-radius: 50%; display: none; }
+    .bnav-item.active .bnav-dot { display: block; }
+  </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="proto-nav">
-  <span aria-label="Navegação de telas" role="navigation">TELAS →</span>
-  <button class="nav-btn active" onclick="goTo('login', this)" aria-current="page" aria-label="Tela de Login">01 Login</button>
-  <button class="nav-btn" onclick="goTo('diag', this)" aria-label="Tela de Diagnóstico">02 Diagnóstico</button>
-  <button class="nav-btn" onclick="goTo('trilha', this)" aria-label="Tela de Trilha">03 Trilha</button>
-  <button class="nav-btn" onclick="goTo('portfolio', this)" aria-label="Tela de Portfólio">04 Portfólio</button>
-  <button class="nav-btn" onclick="goTo('simul', this)" aria-label="Tela de Simulador">05 Simulador</button>
+  <span>TELAS →</span>
+  <button class="nav-btn" onclick="goTo('onboard',this)">00 Onboard</button>
+  <button class="nav-btn active" onclick="goTo('login',this)">01 Login</button>
+  <button class="nav-btn" onclick="goTo('diag',this);initDiag()">02 Diagnóstico</button>
+  <button class="nav-btn" onclick="goTo('trilha',this)">03 Trilha</button>
+  <button class="nav-btn" onclick="goTo('portfolio',this)">04 Portfólio</button>
+  <button class="nav-btn" onclick="goTo('simul',this)">05 Simulador</button>
 </nav>
 
 <div class="stage">
 
-  <!-- ── S1 LOGIN ── -->
+  <!-- S1 LOGIN -->
   <div class="screen visible" id="s-login">
     <div class="login-logo">
-      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
     </div>
     <div class="login-title">Michi</div>
     <div class="login-sub">Sua trilha para o mercado de TI</div>
     <div class="login-form">
-      <form id="loginForm" onsubmit="return validateLogin(event)">
+      <form onsubmit="return handleLogin(event)">
         <div class="input-wrap">
-          <label for="loginEmail">E-mail</label>
-          <input id="loginEmail" type="email" placeholder="seu@email.com" required aria-required="true"/>
+          <label>E-mail</label>
+          <input type="email" placeholder="seu@email.com" required/>
         </div>
-        <div class="input-wrap">
-          <label for="loginSenha">Senha</label>
-          <input id="loginSenha" type="password" placeholder="••••••••" required aria-required="true" minlength="6"/>
+        <div class="input-wrap" style="margin-top:14px;">
+          <label>Senha</label>
+          <input type="password" placeholder="••••••••" required minlength="6"/>
         </div>
-        <button class="btn-primary" type="submit">Entrar</button>
-        <div id="loginError" style="color:#E53935; margin-top:8px; display:none; font-size:13px; text-align:center;"></div>
+        <div class="login-error" role="alert" aria-live="assertive"></div>
+        <button class="btn-primary" type="submit" style="margin-top:22px;">Entrar</button>
       </form>
     </div>
     <div class="divider-or"><hr/><span>ou</span><hr/></div>
     <div class="login-links">
-      <a href="#" role="button" tabindex="0" onclick="goTo('diag', document.querySelectorAll('.nav-btn')[1])" aria-label="Cadastre-se grátis">Não tem conta? <strong>Cadastre-se grátis</strong></a>
-      <a href="#" role="button" tabindex="0" aria-label="Esqueci minha senha">Esqueci minha senha</a>
+      <a onclick="startDiag()">Não tem conta? <strong>Cadastre-se grátis</strong></a>
+      <a>Esqueci minha senha</a>
     </div>
   </div>
 
-  <!-- ── S2 DIAGNÓSTICO ── -->
+  <!-- S1.5 ONBOARDING -->
+  <div class="screen" id="s-onboard">
+    <div class="onboard-body" style="padding:40px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;">
+      <h2 style="font-size:24px;font-weight:700;color:var(--navy);margin-bottom:16px;">Bem-vindo à Michi!</h2>
+      <p style="font-size:15px;color:var(--muted);line-height:1.5;text-align:center;margin-bottom:32px;">
+        Aqui você traça sua jornada em TI, acompanha seu progresso e transforma projetos em portfólio profissional.
+      </p>
+      <button class="btn-primary" onclick="startDiag();" style="width:auto;padding:12px 24px;">Começar</button>
+    </div>
+  </div>
+
+  <!-- S2 DIAGNÓSTICO -->
   <div class="screen" id="s-diag">
     <div class="top-bar">
       <div class="top-bar-row">
@@ -621,37 +283,18 @@
         <div class="prog-bar-fill" id="prog-fill" style="width:13%"></div>
       </div>
     </div>
-
     <div class="q-body">
-      <div class="q-text" id="q-text">Qual é o seu maior desafio ao estudar para vagas de TI?</div>
-      <div class="q-hint">Selecione a opção que mais se aproxima da sua realidade</div>
-      <div class="answers" id="answers">
-        <div class="answer-opt" onclick="selectAnswer(this)">
-          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          Falta de tempo para estudar com consistência
-        </div>
-        <div class="answer-opt" onclick="selectAnswer(this)">
-          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          Não saber por onde começar ou o que priorizar
-        </div>
-        <div class="answer-opt" onclick="selectAnswer(this)">
-          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          Ansiedade durante entrevistas e processos seletivos
-        </div>
-        <div class="answer-opt" onclick="selectAnswer(this)">
-          <div class="opt-circle"><svg class="opt-check" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          Dificuldade com o inglês técnico
-        </div>
-      </div>
+      <div class="q-text" id="q-text"></div>
+      <div class="q-hint" id="q-hint"></div>
+      <div class="answers" id="answers"></div>
     </div>
-
     <div class="q-actions">
-      <button class="btn-sec" onclick="goTo('login', document.querySelectorAll('.nav-btn')[0])" aria-label="Voltar para login">Voltar</button>
-      <button class="btn-next" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])" aria-label="Ir para trilha">Próxima →</button>
+      <button class="btn-sec" id="btn-back" onclick="prevQ()">Voltar</button>
+      <button class="btn-next" id="btn-next" onclick="nextQ()">Próxima →</button>
     </div>
   </div>
 
-  <!-- ── S3 TRILHA ── -->
+  <!-- S3 TRILHA -->
   <div class="screen" id="s-trilha">
     <div class="trilha-header">
       <div class="logo-pill">Michi</div>
@@ -662,10 +305,8 @@
         <span class="trilha-prog-label">32%</span>
       </div>
     </div>
-
     <div class="modules-list">
-      <!-- done -->
-      <div class="module-card" tabindex="0" aria-label="Fundamentos de TI concluído">
+      <div class="module-card">
         <div class="mod-icon done">✅</div>
         <div class="mod-info">
           <div class="mod-name">Fundamentos de TI</div>
@@ -674,8 +315,7 @@
         </div>
         <div class="mod-right"><span class="check-icon">✓</span></div>
       </div>
-      <!-- active -->
-      <div class="module-card active" tabindex="0" aria-label="Entrevistas Técnicas em andamento" onclick="goTo('simul', document.querySelectorAll('.nav-btn')[4])">
+      <div class="module-card active" onclick="goTo('simul',document.querySelectorAll('.nav-btn')[4])">
         <div class="mod-icon active">📘</div>
         <div class="mod-info">
           <div class="mod-name">Entrevistas Técnicas</div>
@@ -684,8 +324,7 @@
         </div>
         <div class="mod-right"><span class="arrow-icon">→</span></div>
       </div>
-      <!-- locked -->
-      <div class="module-card locked" tabindex="0" aria-label="Currículo & LinkedIn bloqueado">
+      <div class="module-card locked">
         <div class="mod-icon locked">🔒</div>
         <div class="mod-info">
           <div class="mod-name">Currículo & LinkedIn</div>
@@ -694,7 +333,7 @@
         </div>
         <div class="mod-right"><span class="lock-icon">🔒</span></div>
       </div>
-      <div class="module-card locked" tabindex="0" aria-label="Inglês Técnico bloqueado">
+      <div class="module-card locked">
         <div class="mod-icon locked">🔒</div>
         <div class="mod-info">
           <div class="mod-name">Inglês Técnico</div>
@@ -703,7 +342,7 @@
         </div>
         <div class="mod-right"><span class="lock-icon">🔒</span></div>
       </div>
-      <div class="module-card locked" tabindex="0" aria-label="Simulado Final bloqueado">
+      <div class="module-card locked">
         <div class="mod-icon locked">🔒</div>
         <div class="mod-info">
           <div class="mod-name">Simulado Final</div>
@@ -713,228 +352,284 @@
         <div class="mod-right"><span class="lock-icon">🔒</span></div>
       </div>
     </div>
-
     <nav class="bottom-nav">
-      <div class="bnav-item" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <div class="bnav-item active" onclick="goTo('trilha',document.querySelectorAll('.nav-btn')[2])">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
         <span>Trilha</span><div class="bnav-dot"></div>
       </div>
-      <div class="bnav-item active" onclick="goTo('portfolio', document.querySelectorAll('.nav-btn')[3])">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      <div class="bnav-item" onclick="goTo('portfolio',document.querySelectorAll('.nav-btn')[3])">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         <span>Portfólio</span><div class="bnav-dot"></div>
       </div>
-      <div class="bnav-item" onclick="goTo('simul', document.querySelectorAll('.nav-btn')[4])">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      <div class="bnav-item" onclick="goTo('simul',document.querySelectorAll('.nav-btn')[4])">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
         <span>Simulador</span><div class="bnav-dot"></div>
       </div>
     </nav>
   </div>
 
-  <!-- ── S4 PORTFÓLIO ── -->
+  <!-- S4 PORTFÓLIO -->
   <div class="screen" id="s-portfolio">
     <div class="port-header">
       <div class="logo-pill">Michi</div>
       <div class="port-title">Meu Portfólio</div>
       <div class="port-sub">Acompanhe sua evolução</div>
     </div>
-
     <div class="port-body">
       <div class="stats-row">
-        <div class="stat-card">
-          <span class="stat-num green">32%</span>
-          <span class="stat-label">Progresso geral</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-num">1/5</span>
-          <span class="stat-label">Módulos concluídos</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-num green">7</span>
-          <span class="stat-label">Dias seguidos</span>
-        </div>
+        <div class="stat-card"><span class="stat-num green">32%</span><span class="stat-label">Progresso geral</span></div>
+        <div class="stat-card"><span class="stat-num">1/5</span><span class="stat-label">Módulos concluídos</span></div>
+        <div class="stat-card"><span class="stat-num green">7</span><span class="stat-label">Dias seguidos</span></div>
       </div>
-
       <div class="chart-card">
         <div class="card-title">Desempenho por área</div>
         <div class="bar-chart">
-          <div class="bar-col">
-            <div class="bar-fill green" style="height:80px"></div>
-            <span class="bar-label">Fund.</span>
-          </div>
-          <div class="bar-col">
-            <div class="bar-fill" style="height:55px"></div>
-            <span class="bar-label">Entrev.</span>
-          </div>
-          <div class="bar-col">
-            <div class="bar-fill" style="height:30px; opacity:.35;"></div>
-            <span class="bar-label">CV</span>
-          </div>
-          <div class="bar-col">
-            <div class="bar-fill" style="height:20px; opacity:.35;"></div>
-            <span class="bar-label">Inglês</span>
-          </div>
-          <div class="bar-col">
-            <div class="bar-fill" style="height:10px; opacity:.25;"></div>
-            <span class="bar-label">Simul.</span>
-          </div>
+          <div class="bar-col"><div class="bar-fill green" style="height:80px"></div><span class="bar-label">Fund.</span></div>
+          <div class="bar-col"><div class="bar-fill" style="height:55px"></div><span class="bar-label">Entrev.</span></div>
+          <div class="bar-col"><div class="bar-fill" style="height:30px;opacity:.35;"></div><span class="bar-label">CV</span></div>
+          <div class="bar-col"><div class="bar-fill" style="height:20px;opacity:.35;"></div><span class="bar-label">Inglês</span></div>
+          <div class="bar-col"><div class="bar-fill" style="height:10px;opacity:.25;"></div><span class="bar-label">Simul.</span></div>
         </div>
       </div>
-
       <div class="checklist-card">
         <div class="card-title">Checklist de prontidão</div>
-        <div class="check-item">
-          <div class="check-box done">✓</div>
-          <span class="check-text done">Completar diagnóstico inicial</span>
-        </div>
-        <div class="check-item">
-          <div class="check-box done">✓</div>
-          <span class="check-text done">Concluir módulo de Fundamentos</span>
-        </div>
-        <div class="check-item">
-          <div class="check-box done">✓</div>
-          <span class="check-text done">Fazer 1° simulado de entrevista</span>
-        </div>
-        <div class="check-item">
-          <div class="check-box todo"></div>
-          <span class="check-text">Atualizar currículo no LinkedIn</span>
-        </div>
-        <div class="check-item">
-          <div class="check-box todo"></div>
-          <span class="check-text">Completar módulo de Inglês Técnico</span>
-        </div>
+        <div class="check-item"><div class="check-box done">✓</div><span class="check-text done">Completar diagnóstico inicial</span></div>
+        <div class="check-item"><div class="check-box done">✓</div><span class="check-text done">Concluir módulo de Fundamentos</span></div>
+        <div class="check-item"><div class="check-box done">✓</div><span class="check-text done">Fazer 1° simulado de entrevista</span></div>
+        <div class="check-item"><div class="check-box todo"></div><span class="check-text">Atualizar currículo no LinkedIn</span></div>
+        <div class="check-item"><div class="check-box todo"></div><span class="check-text">Completar módulo de Inglês Técnico</span></div>
       </div>
     </div>
-
     <nav class="bottom-nav">
-      <div class="bnav-item" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <div class="bnav-item" onclick="goTo('trilha',document.querySelectorAll('.nav-btn')[2])">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
         <span>Trilha</span><div class="bnav-dot"></div>
       </div>
       <div class="bnav-item active">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         <span>Portfólio</span><div class="bnav-dot"></div>
       </div>
-      <div class="bnav-item" onclick="goTo('simul', document.querySelectorAll('.nav-btn')[4])">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      <div class="bnav-item" onclick="goTo('simul',document.querySelectorAll('.nav-btn')[4])">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
         <span>Simulador</span><div class="bnav-dot"></div>
       </div>
     </nav>
   </div>
 
-  <!-- ── S5 SIMULADOR ── -->
+  <!-- S5 SIMULADOR -->
   <div class="screen" id="s-simul">
     <div class="sim-header">
       <div class="logo-pill">Michi</div>
       <div class="sim-title">Simulador</div>
       <div class="sim-sub">Pratique antes de enfrentar o mercado</div>
     </div>
-
     <div class="sim-body">
       <div class="sim-card active-sim">
         <div class="sim-icon">🎙️</div>
         <div class="sim-info">
           <div class="sim-name">Entrevista Técnica</div>
           <div class="sim-desc">Responda perguntas com feedback imediato de IA</div>
-          <div class="sim-meta">
-            <span class="meta-tag meta-q">20 perguntas</span>
-            <span class="meta-tag meta-time">~30 min</span>
-          </div>
+          <div class="sim-meta"><span class="meta-tag meta-q">20 perguntas</span><span class="meta-tag meta-time">~30 min</span></div>
         </div>
       </div>
-
       <div class="sim-card active-sim">
         <div class="sim-icon">📄</div>
         <div class="sim-info">
           <div class="sim-name">Análise de Currículo</div>
           <div class="sim-desc">Envie seu CV e receba sugestões personalizadas</div>
-          <div class="sim-meta">
-            <span class="meta-tag meta-q">Upload</span>
-            <span class="meta-tag meta-time">~10 min</span>
-          </div>
+          <div class="sim-meta"><span class="meta-tag meta-q">Upload</span><span class="meta-tag meta-time">~10 min</span></div>
         </div>
       </div>
-
       <div class="sim-card locked-sim">
-        <div class="sim-icon locked-sim">🌐</div>
+        <div class="sim-icon locked-bg">🌐</div>
         <div class="sim-info">
           <div class="sim-name">Inglês Técnico</div>
           <div class="sim-desc">Simulação de entrevista em inglês</div>
-          <div class="sim-meta">
-            <span class="meta-tag meta-q" style="background:#F0F3F6;color:var(--muted)">Bloqueado</span>
-          </div>
+          <div class="sim-meta"><span class="meta-tag meta-lock">Bloqueado</span></div>
         </div>
       </div>
-
       <div class="sim-card locked-sim">
-        <div class="sim-icon locked-sim">🏆</div>
+        <div class="sim-icon locked-bg">🏆</div>
         <div class="sim-info">
           <div class="sim-name">Processo Seletivo Completo</div>
           <div class="sim-desc">Simulação realista de ponta a ponta</div>
-          <div class="sim-meta">
-            <span class="meta-tag meta-q" style="background:#F0F3F6;color:var(--muted)">Bloqueado</span>
-          </div>
+          <div class="sim-meta"><span class="meta-tag meta-lock">Bloqueado</span></div>
         </div>
       </div>
     </div>
-
     <nav class="bottom-nav">
-      <div class="bnav-item" onclick="goTo('trilha', document.querySelectorAll('.nav-btn')[2])">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <div class="bnav-item" onclick="goTo('trilha',document.querySelectorAll('.nav-btn')[2])">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
         <span>Trilha</span><div class="bnav-dot"></div>
       </div>
-      <div class="bnav-item" onclick="goTo('portfolio', document.querySelectorAll('.nav-btn')[3])">
-        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      <div class="bnav-item" onclick="goTo('portfolio',document.querySelectorAll('.nav-btn')[3])">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         <span>Portfólio</span><div class="bnav-dot"></div>
       </div>
       <div class="bnav-item active">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
         <span>Simulador</span><div class="bnav-dot"></div>
       </div>
     </nav>
   </div>
 
-</div><!-- /stage -->
+  <!-- S4.5 PORTFÓLIO INFO -->
+  <div class="screen" id="s-portfolio-info">
+    <div style="padding:40px 24px;display:flex;flex-direction:column;flex:1;">
+      <h2 style="font-size:20px;font-weight:700;color:var(--navy);margin-bottom:12px;">Projetos → Portfólio</h2>
+      <p style="font-size:15px;color:var(--muted);line-height:1.5;margin-bottom:24px;">
+        Cada atividade e projeto concluído vira um cartão que você pode exportar ou compartilhar. Assim, ao conversar com recrutadores ou montar seu LinkedIn,
+        terá exemplos reais do que aprendeu.
+      </p>
+      <button class="btn-sec" onclick="goBackFromPortfolioInfo()">Voltar ao portfólio</button>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast" class="toast" aria-live="polite"></div>
 
 <script>
-  const screens = { login:'s-login', diag:'s-diag', trilha:'s-trilha', portfolio:'s-portfolio', simul:'s-simul' };
+  /* NAVEGAÇÃO */
+  const screens = { onboard:'s-onboard', login:'s-login', diag:'s-diag', trilha:'s-trilha', portfolio:'s-portfolio', 'portfolio-info':'s-portfolio-info', simul:'s-simul' };
 
   function goTo(key, btn) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
-    document.getElementById(screens[key]).classList.add('visible');
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    const tgt = document.getElementById(screens[key]);
+    if (tgt) tgt.classList.add('visible');
   }
 
-  function selectAnswer(el) {
+  /* TOAST */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  /* LOGIN */
+  function handleLogin(e) {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.querySelector('input[type=email]').value;
+    const pass = form.querySelector('input[type=password]').value;
+    const errEl = document.querySelector('.login-error');
+    errEl.classList.remove('visible');
+    if (!email.includes('@')) {
+      errEl.textContent = 'E-mail inválido';
+      errEl.classList.add('visible');
+      return false;
+    }
+    if (pass.length < 6) {
+      errEl.textContent = 'Senha muito curta';
+      errEl.classList.add('visible');
+      return false;
+    }
+    showToast('Bem‑vindo!');
+    showOnboarding();
+  }
+  function showOnboarding() { goTo('onboard'); }
+  function startDiag() { initDiag(); goTo('diag', document.querySelectorAll('.nav-btn')[1]); }
+
+  /* PORTFÓLIO INFO */
+  function showPortfolioInfo() { goTo('portfolio-info'); }
+  function goBackFromPortfolioInfo() { goTo('portfolio'); }
+
+  /* DIAGNÓSTICO */
+  const QUESTIONS = [
+    { text: 'Qual é o seu maior desafio ao estudar para vagas de TI?', hint: 'Selecione a opção que mais se aproxima da sua realidade', options: ['Falta de tempo para estudar com consistência', 'Não saber por onde começar ou o que priorizar', 'Ansiedade durante entrevistas e processos seletivos', 'Dificuldade com o inglês técnico'] },
+    { text: 'Qual área de TI mais combina com o seu perfil?', hint: 'Pense no que você mais gosta de fazer no dia a dia', options: ['Desenvolvimento de software (back-end ou front-end)', 'Dados, BI e análise de dados', 'Infraestrutura, cloud e DevOps', 'Segurança da informação'] },
+    { text: 'Qual é o seu nível atual de experiência em TI?', hint: 'Seja honesto — isso ajuda a personalizar sua trilha', options: ['Iniciante — estou começando do zero', 'Básico — conheço fundamentos mas nunca trabalhei na área', 'Intermediário — tenho alguma experiência profissional', 'Avançado — busco migrar ou crescer na carreira'] },
+    { text: 'Com que frequência você consegue estudar por semana?', hint: 'Considere sua rotina atual de forma realista', options: ['Menos de 2 horas por semana', 'Entre 2 e 5 horas por semana', 'Entre 5 e 10 horas por semana', 'Mais de 10 horas por semana'] },
+    { text: 'Qual seu principal objetivo com a plataforma?', hint: 'Escolha o que mais representa sua meta agora', options: ['Conseguir meu primeiro emprego em TI', 'Mudar de área ou empresa', 'Passar em entrevistas técnicas difíceis', 'Melhorar meu currículo e portfólio'] },
+    { text: 'Como você se sente em relação ao inglês técnico?', hint: 'Avalie sua confiança para comunicação profissional', options: ['Não tenho nenhuma base em inglês', 'Entendo textos básicos mas não falo bem', 'Consigo me virar em leitura e escrita', 'Me sinto confortável para entrevistas em inglês'] },
+    { text: 'Quais recursos você já utiliza para estudar TI?', hint: 'Selecione o mais próximo da sua situação atual', options: ['Apenas tutoriais gratuitos no YouTube', 'Cursos online pagos (Udemy, Alura, etc.)', 'Livros técnicos e documentações oficiais', 'Bootcamps, mentorias ou formações estruturadas'] },
+    { text: 'O que mais te impede de avançar na carreira de TI?', hint: 'Última pergunta — seja sincero para obter os melhores resultados', options: ['Síndrome do impostor e falta de confiança', 'Não sei como montar um portfólio relevante', 'Não consigo passar nas etapas de entrevista', 'Falta de rede de contatos (networking) na área'] }
+  ];
+
+  const TOTAL = QUESTIONS.length;
+  let currentQ = 0;
+  let answers = new Array(TOTAL).fill(null);
+
+  function initDiag() {
+    currentQ = 0;
+    answers = new Array(TOTAL).fill(null);
+    renderQ(false);
+  }
+
+  function renderQ(animate) {
+    const q = QUESTIONS[currentQ];
+    const pct = Math.round(((currentQ + 1) / TOTAL) * 100);
+
+    document.getElementById('q-num').textContent = currentQ + 1;
+    document.getElementById('q-pct').textContent = pct + '%';
+    document.getElementById('prog-fill').style.width = pct + '%';
+    document.getElementById('q-text').textContent = q.text;
+    document.getElementById('q-hint').textContent = q.hint;
+
+    const btnBack = document.getElementById('btn-back');
+    const btnNext = document.getElementById('btn-next');
+    btnBack.textContent = currentQ === 0 ? 'Sair' : '← Voltar';
+    const isLast = currentQ === TOTAL - 1;
+    btnNext.textContent = isLast ? '✓ Concluir diagnóstico' : 'Próxima →';
+    isLast ? btnNext.classList.add('finish') : btnNext.classList.remove('finish');
+
+    const container = document.getElementById('answers');
+
+    const buildOptions = () => {
+      container.innerHTML = q.options.map((opt, i) => `
+        <div class="answer-opt${answers[currentQ] === i ? ' selected' : ''}" tabindex="0" onclick="selectOpt(this,${i})">
+          <div class="opt-circle">
+            <svg viewBox="0 0 10 8" width="10" height="10">
+              <polyline points="1,4 4,7 9,1" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="opt-text">${opt}</span>
+          <span class="opt-tag">Selecionado</span>
+        </div>
+      `).join('');
+      if (animate) {
+        container.classList.remove('slide-out');
+        container.classList.add('slide-in');
+        container.addEventListener('animationend', () => container.classList.remove('slide-in'), { once: true });
+      }
+    };
+
+    if (animate) {
+      container.classList.remove('slide-in');
+      container.classList.add('slide-out');
+      container.addEventListener('animationend', buildOptions, { once: true });
+    } else {
+      buildOptions();
+    }
+  }
+
+  function selectOpt(el, idx) {
     document.querySelectorAll('.answer-opt').forEach(o => o.classList.remove('selected'));
     el.classList.add('selected');
+    answers[currentQ] = idx;
   }
 
-  function validateLogin(event) {
-    event.preventDefault();
-    const email = document.getElementById('loginEmail').value.trim();
-    const senha = document.getElementById('loginSenha').value.trim();
-    const errorDiv = document.getElementById('loginError');
-    errorDiv.style.display = 'none';
-    if (!email || !senha) {
-      errorDiv.textContent = 'Preencha todos os campos.';
-      errorDiv.style.display = 'block';
-      return false;
+  function nextQ() {
+    if (currentQ === TOTAL - 1) {
+      showToast('Diagnóstico concluído!');
+      goTo('trilha', document.querySelectorAll('.nav-btn')[2]);
+      return;
     }
-    if (senha.length < 6) {
-      errorDiv.textContent = 'A senha deve ter pelo menos 6 caracteres.';
-      errorDiv.style.display = 'block';
-      return false;
-    }
-    // Simulação de login: só permite email demo e senha demo
-    if (email !== 'demo@email.com' || senha !== 'demosenha') {
-      errorDiv.textContent = 'E-mail ou senha incorretos.';
-      errorDiv.style.display = 'block';
-      return false;
-    }
-    goTo('diag', document.querySelectorAll('.nav-btn')[1]);
-    return false;
+    currentQ++;
+    renderQ(true);
   }
+
+  function prevQ() {
+    if (currentQ === 0) { goTo('login', document.querySelectorAll('.nav-btn')[0]); return; }
+    currentQ--;
+    renderQ(true);
+  }
+
+  initDiag();
 </script>
 </body>
 </html>
