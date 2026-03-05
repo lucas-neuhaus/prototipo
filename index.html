@@ -299,12 +299,24 @@
 
   <!-- S1.5 ONBOARDING -->
   <div class="screen" id="s-onboard">
-    <div class="onboard-body" style="padding:40px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;">
-      <h2 style="font-size:24px;font-weight:700;color:#fff;margin-bottom:16px;">Bem-vindo à Michi!</h2>
-      <p style="font-size:15px;color:rgba(255,255,255,.75);line-height:1.5;text-align:center;margin-bottom:32px;">
-        Aqui você traça sua jornada em TI, acompanha seu progresso e transforma projetos em portfólio profissional.
+    <div class="onboard-body" style="padding:40px 24px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;flex:1;overflow-y:auto;">
+      <h2 style="font-size:28px;font-weight:700;color:#fff;margin-bottom:20px;">Bem-vindo à Michi! 🚀</h2>
+      <p style="font-size:15px;color:rgba(255,255,255,.85);line-height:1.7;margin-bottom:24px;">
+        Sua plataforma personalizida para transformar sua trajetória profissional em TI.
       </p>
-      <button class="btn-primary" onclick="startDiag();" style="width:auto;padding:12px 24px;">Começar</button>
+      <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:20px;margin-bottom:24px;">
+        <h3 style="font-size:14px;color:var(--green);font-weight:700;margin-bottom:12px;text-transform:uppercase;">Como Funciona</h3>
+        <ul style="list-style:none;color:rgba(255,255,255,.8);font-size:14px;line-height:1.8;">
+          <li style="margin-bottom:10px;"><strong style="color:#fff;">1. Diagnóstico</strong> — Responda 5 perguntas rápidas para que a gente entenda seu perfil e nível de conhecimento</li>
+          <li style="margin-bottom:10px;"><strong style="color:#fff;">2. Trilha Personalizada</strong> — Com base em suas respostas, criamos uma trajetória perfeitamente alinhada aos seus objetivos</li>
+          <li style="margin-bottom:10px;"><strong style="color:#fff;">3. Aprenda e Pratique</strong> — Modelos, simuladores e desafios para você crescer de forma prática</li>
+          <li><strong style="color:#fff;">4. Portfólio Profissional</strong> — Construa projetos reais que impressionam recrutadores</li>
+        </ul>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,.75);margin-bottom:32px;">
+        Não se preocupe com erros! O diagnóstico é só para nos conhecer melhor! Você pode responder "Não sei" se preferir.
+      </p>
+      <button class="btn-primary" onclick="startDiag();" style="width:100%;padding:16px 24px;margin-top:auto;">Iniciar Diagnóstico</button>
     </div>
   </div>
 
@@ -316,7 +328,7 @@
         <div class="tag-diag">Diagnóstico</div>
       </div>
       <div class="top-bar-row" style="margin-bottom:8px;">
-        <span style="color:rgba(255,255,255,.7);font-size:14px;">Questão <strong id="q-num">1</strong> de 8</span>
+        <span style="color:rgba(255,255,255,.7);font-size:14px;">Questão <strong id="q-num">1</strong> de 5</span>
         <span class="q-counter" id="q-pct">13%</span>
       </div>
       <div class="prog-bar-wrap">
@@ -576,7 +588,7 @@
     }
     const user = users.find(u => u.email === email);
     if (!user || user.pass !== pass) {
-      errEl.textContent = 'Credenciais inválidas';
+      errEl.textContent = 'Email ou senha incorretos.';
       errEl.classList.add('visible');
       return false;
     }
@@ -636,14 +648,11 @@
 
   /* DIAGNÓSTICO */
   const QUESTIONS = [
-    { text: 'Qual é o seu maior desafio ao estudar para vagas de TI?', hint: 'Selecione a opção que mais se aproxima da sua realidade', options: ['Falta de tempo para estudar com consistência', 'Não saber por onde começar ou o que priorizar', 'Ansiedade durante entrevistas e processos seletivos', 'Dificuldade com o inglês técnico'] },
-    { text: 'Qual área de TI mais combina com o seu perfil?', hint: 'Pense no que você mais gosta de fazer no dia a dia', options: ['Desenvolvimento de software (back-end ou front-end)', 'Dados, BI e análise de dados', 'Infraestrutura, cloud e DevOps', 'Segurança da informação'] },
-    { text: 'Qual é o seu nível atual de experiência em TI?', hint: 'Seja honesto — isso ajuda a personalizar sua trilha', options: ['Iniciante — estou começando do zero', 'Básico — conheço fundamentos mas nunca trabalhei na área', 'Intermediário — tenho alguma experiência profissional', 'Avançado — busco migrar ou crescer na carreira'] },
-    { text: 'Com que frequência você consegue estudar por semana?', hint: 'Considere sua rotina atual de forma realista', options: ['Menos de 2 horas por semana', 'Entre 2 e 5 horas por semana', 'Entre 5 e 10 horas por semana', 'Mais de 10 horas por semana'] },
-    { text: 'Qual seu principal objetivo com a plataforma?', hint: 'Escolha o que mais representa sua meta agora', options: ['Conseguir meu primeiro emprego em TI', 'Mudar de área ou empresa', 'Passar em entrevistas técnicas difíceis', 'Melhorar meu currículo e portfólio'] },
-    { text: 'Como você se sente em relação ao inglês técnico?', hint: 'Avalie sua confiança para comunicação profissional', options: ['Não tenho nenhuma base em inglês', 'Entendo textos básicos mas não falo bem', 'Consigo me virar em leitura e escrita', 'Me sinto confortável para entrevistas em inglês'] },
-    { text: 'Quais recursos você já utiliza para estudar TI?', hint: 'Selecione o mais próximo da sua situação atual', options: ['Apenas tutoriais gratuitos no YouTube', 'Cursos online pagos (Udemy, Alura, etc.)', 'Livros técnicos e documentações oficiais', 'Bootcamps, mentorias ou formações estruturadas'] },
-    { text: 'O que mais te impede de avançar na carreira de TI?', hint: 'Última pergunta — seja sincero para obter os melhores resultados', options: ['Síndrome do impostor e falta de confiança', 'Não sei como montar um portfólio relevante', 'Não consigo passar nas etapas de entrevista', 'Falta de rede de contatos (networking) na área'] }
+    { text: 'Qual é seu principal objetivo profissional neste momento?', hint: 'Escolha o que mais representa seus planos', options: ['Conseguir meu primeiro emprego em TI', 'Mudar de área ou crescer na carreira', 'Passar em processos seletivos e entrevistas', 'Não tenho certeza ainda'] },
+    { text: 'Como é sua situação atual com tecnologia?', hint: 'Sem problemas em se identificar com mais de uma opção', options: ['Nunca tive contato com programação ou TI', 'Tenho conhecimento básico em algumas áreas', 'Já trabalho na área ou tenho experiência', 'Não sei / Prefiro não responder'] },
+    { text: 'Com que frequência você consegue dedicar tempo aos estudos?', hint: 'Considere sua rotina realista', options: ['Menos de 2 horas por semana', 'Entre 2 e 5 horas por semana', 'Entre 5 e 10 horas por semana', 'Mais de 10 horas por semana'] },
+    { text: 'Qual é seu maior desafio neste momento?', hint: 'Escolha o que mais te afeta', options: ['Falta de tempo e consistência nos estudos', 'Não saber por onde começar ou o que focar', 'Insegurança ou síndrome do impostor', 'Dificuldade em networking ou encontrar oportunidades'] },
+    { text: 'Como você prefere aprender?', hint: 'Escolha o estilo que mais combina com você', options: ['Vídeo aulas e conteúdo visual', 'Projetos práticos e desafios reais', 'Leitura e documentação detalhada', 'Um pouco de tudo, bem equilibrado'] }
   ];
 
   const TOTAL = QUESTIONS.length;
