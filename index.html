@@ -72,6 +72,8 @@
 
     /* LOGIN */
     #s-login { background: var(--navy); align-items: center; justify-content: center; padding: 48px 32px; }
+    #s-cadastro { background: var(--navy); align-items: center; justify-content: center; padding: 48px 32px; }
+    #s-onboard { background: var(--navy); align-items: center; justify-content: center; padding: 48px 32px; }
     .login-logo { width: 80px; height: 80px; background: var(--green); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 32px; box-shadow: 0 8px 32px rgba(39,174,96,.35); }
     .login-title { color: #fff; font-size: 26px; font-weight: 700; letter-spacing: -.5px; margin-bottom: 6px; text-align: center; }
     .login-sub { color: rgba(255,255,255,.75); font-size: 14px; margin-bottom: 40px; text-align: center; }
@@ -219,6 +221,7 @@
   <span>TELAS →</span>
   <button class="nav-btn" onclick="goTo('onboard',this)">00 Onboard</button>
   <button class="nav-btn active" onclick="goTo('login',this)">01 Login</button>
+  <button class="nav-btn" onclick="goTo('cadastro',this)">01.5 Cadastro</button>
   <button class="nav-btn" onclick="goTo('diag',this);initDiag()">02 Diagnóstico</button>
   <button class="nav-btn" onclick="goTo('trilha',this)">03 Trilha</button>
   <button class="nav-btn" onclick="goTo('portfolio',this)">04 Portfólio</button>
@@ -252,16 +255,53 @@
     </div>
     <div class="divider-or"><hr/><span>ou</span><hr/></div>
     <div class="login-links">
-      <a onclick="startDiag()">Não tem conta? <strong>Cadastre-se grátis</strong></a>
+      <a onclick="goTo('cadastro',document.querySelectorAll('.nav-btn')[2])">Não tem conta? <strong>Cadastre-se grátis</strong></a>
       <a>Esqueci minha senha</a>
+    </div>
+  </div>
+
+  <!-- S1.5 CADASTRO -->
+  <div class="screen" id="s-cadastro">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="login-title">Criar Conta</div>
+    <div class="login-sub">Junte-se à Michi e comece sua jornada em TI</div>
+    <div class="login-form">
+      <form onsubmit="return handleCadastro(event)">
+        <div class="input-wrap">
+          <label>Nome Completo</label>
+          <input type="text" placeholder="Seu nome completo" required/>
+        </div>
+        <div class="input-wrap" style="margin-top:14px;">
+          <label>E-mail</label>
+          <input type="email" placeholder="seu@email.com" required/>
+        </div>
+        <div class="input-wrap" style="margin-top:14px;">
+          <label>Senha</label>
+          <input type="password" placeholder="••••••••" required minlength="6"/>
+        </div>
+        <div class="input-wrap" style="margin-top:14px;">
+          <label>Confirmar Senha</label>
+          <input type="password" placeholder="••••••••" required minlength="6"/>
+        </div>
+        <div class="login-error" role="alert" aria-live="assertive"></div>
+        <button class="btn-primary" type="submit" style="margin-top:22px;">Cadastrar</button>
+      </form>
+    </div>
+    <div class="divider-or"><hr/><span>ou</span><hr/></div>
+    <div class="login-links">
+      <a onclick="goTo('login',document.querySelectorAll('.nav-btn')[1])">Já tem conta? <strong>Faça login</strong></a>
     </div>
   </div>
 
   <!-- S1.5 ONBOARDING -->
   <div class="screen" id="s-onboard">
     <div class="onboard-body" style="padding:40px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;">
-      <h2 style="font-size:24px;font-weight:700;color:var(--navy);margin-bottom:16px;">Bem-vindo à Michi!</h2>
-      <p style="font-size:15px;color:var(--muted);line-height:1.5;text-align:center;margin-bottom:32px;">
+      <h2 style="font-size:24px;font-weight:700;color:#fff;margin-bottom:16px;">Bem-vindo à Michi!</h2>
+      <p style="font-size:15px;color:rgba(255,255,255,.75);line-height:1.5;text-align:center;margin-bottom:32px;">
         Aqui você traça sua jornada em TI, acompanha seu progresso e transforma projetos em portfólio profissional.
       </p>
       <button class="btn-primary" onclick="startDiag();" style="width:auto;padding:12px 24px;">Começar</button>
@@ -491,7 +531,12 @@
 
 <script>
   /* NAVEGAÇÃO */
-  const screens = { onboard:'s-onboard', login:'s-login', diag:'s-diag', trilha:'s-trilha', portfolio:'s-portfolio', 'portfolio-info':'s-portfolio-info', simul:'s-simul' };
+  const screens = { onboard:'s-onboard', login:'s-login', cadastro:'s-cadastro', diag:'s-diag', trilha:'s-trilha', portfolio:'s-portfolio', 'portfolio-info':'s-portfolio-info', simul:'s-simul' };
+
+  // simples armazenamento de usuários no localStorage (apenas para demo)
+  const STORAGE_KEY = 'michi_users';
+  let users = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  function saveUsers() { localStorage.setItem(STORAGE_KEY, JSON.stringify(users)); }
 
   function goTo(key, btn) {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -514,8 +559,9 @@
   function handleLogin(e) {
     e.preventDefault();
     const form = e.target;
-    const email = form.querySelector('input[type=email]').value;
-    const pass = form.querySelector('input[type=password]').value;
+    const email = form.querySelector('input[type=email]').value.trim().toLowerCase();
+    // use querySelectorAll for passwords to avoid structural issues
+    const pass = form.querySelectorAll('input[type=password]')[0].value;
     const errEl = document.querySelector('.login-error');
     errEl.classList.remove('visible');
     if (!email.includes('@')) {
@@ -528,11 +574,61 @@
       errEl.classList.add('visible');
       return false;
     }
-    showToast('Bem‑vindo!');
+    const user = users.find(u => u.email === email);
+    if (!user || user.pass !== pass) {
+      errEl.textContent = 'Credenciais inválidas';
+      errEl.classList.add('visible');
+      return false;
+    }
+    showToast(`Bem‑vindo ${user.nome.split(' ')[0]}!`);
     showOnboarding();
+    return false; // keep single-page behaviour
   }
   function showOnboarding() { goTo('onboard'); }
   function startDiag() { initDiag(); goTo('diag', document.querySelectorAll('.nav-btn')[1]); }
+
+  /* CADASTRO */
+  function handleCadastro(e) {
+    e.preventDefault();
+    const form = e.target;
+    const nome = form.querySelector('input[type=text]').value.trim();
+    const email = form.querySelector('input[type=email]').value.trim().toLowerCase();
+    const passwords = form.querySelectorAll('input[type=password]');
+    const pass = passwords[0].value;
+    const confirmPass = passwords[1].value;
+    const errEl = form.querySelector('.login-error');
+    errEl.classList.remove('visible');
+    if (!nome) {
+      errEl.textContent = 'Nome é obrigatório';
+      errEl.classList.add('visible');
+      return false;
+    }
+    if (!email.includes('@')) {
+      errEl.textContent = 'E-mail inválido';
+      errEl.classList.add('visible');
+      return false;
+    }
+    if (users.find(u => u.email === email)) {
+      errEl.textContent = 'E-mail já cadastrado';
+      errEl.classList.add('visible');
+      return false;
+    }
+    if (pass.length < 6) {
+      errEl.textContent = 'Senha deve ter pelo menos 6 caracteres';
+      errEl.classList.add('visible');
+      return false;
+    }
+    if (pass !== confirmPass) {
+      errEl.textContent = 'Senhas não coincidem';
+      errEl.classList.add('visible');
+      return false;
+    }
+    users.push({ nome, email, pass });
+    saveUsers();
+    showToast('Conta criada com sucesso!');
+    startDiag();
+    return false;
+  }
 
   /* PORTFÓLIO INFO */
   function showPortfolioInfo() { goTo('portfolio-info'); }
